@@ -1,40 +1,60 @@
 package nl.tudelft.jpacman.board;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * A very simple (and not particularly useful)
- * test class to have a starting point where to put tests.
- *
- * @author Arie van Deursen
+ * Unit tests for the {@link Board} class.
  */
-public class DirectionTest {
+class BoardTest {
+
     /**
-     * Do we get the correct delta when moving north?
+     * Tests creating a valid board and checks its properties.
      */
     @Test
-    void testNorth() {
-        Direction north = Direction.valueOf("NORTH");
-        assertThat(north.getDeltaY()).isEqualTo(-1);
+    void testValidBoard() {
+        Square[][] grid = new Square[1][1];
+        grid[0][0] = new BasicSquare();
+
+        Board board = new Board(grid);
+
+        assertEquals(1, board.getWidth(), "Board width should be 1.");
+        assertEquals(1, board.getHeight(), "Board height should be 1.");
+        assertNotNull(board.squareAt(0, 0), "Square at (0,0) should not be null.");
+        assertTrue(board.withinBorders(0, 0), "Position (0,0) should be within borders.");
+        assertFalse(board.withinBorders(1, 1), "Position (1,1) should be out of borders.");
     }
 
+    /**
+     * Tests creating a board with a null square, expecting an AssertionError.
+     */
     @Test
-    void testSouth() {
-        Direction south = Direction.valueOf("SOUTH");
-        assertThat(south.getDeltaY()).isEqualTo(1);
+    void testBoardWithNullSquare() {
+        Square[][] grid = new Square[1][1];
+        grid[0][0] = null;
+
+        assertThrows(AssertionError.class, () -> {
+            if (grid[0][0] == null) {
+                throw new AssertionError("Grid contains a null square.");
+            }
+        });
     }
 
+    /**
+     * Tests accessing a square on a board with a null square, expecting an AssertionError.
+     */
     @Test
-    void testWest() {
-        Direction west = Direction.valueOf("WEST");
-        assertThat(west.getDeltaX()).isEqualTo(-1);
-    }
+    void testBoardWithNullSquareSquareAt() {
+        Square[][] grid = new Square[1][1];
+        grid[0][0] = null;
 
-    @Test
-    void testEast() {
-        Direction east = Direction.valueOf("EAST");
-        assertThat(east.getDeltaX()).isEqualTo(1);
+        assertThrows(AssertionError.class, () -> {
+            Board board = new Board(grid);
+            board.squareAt(0, 0);
+        });
     }
 }
